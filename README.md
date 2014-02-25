@@ -1,4 +1,4 @@
-## Asynchronous HTTP proxy for proxying to virtual hosts
+## HTTP Proxy Server for Proxying to Local Virtual Hosts
 
 Built using Tornado (tested with version 3.2), supports HTTP GET, and POST methods.
 
@@ -8,6 +8,6 @@ Built using Tornado (tested with version 3.2), supports HTTP GET, and POST metho
 
 ### Usage
 
-    * Modify `vhost_map.json` to map hostnames to the port(s) required.
+* Modify `vhost_map.json` to map hostnames to the port(s) required.
+* `python tornado_proxy/proxy.py -p [port] -v [vhost_map.json]`
 
-    python tornado_proxy/proxy.py -p [port] -v [vhost_map.json]
