@@ -58,7 +58,12 @@ class ProxyHandler(tornado.web.RequestHandler):
                     self.set_header(k, v)
                 # If redirect, then redirect
                 if hasattr(response, "effective_url"):
-                    self.redirect(getattr(response, "effective_url"))
+                    port_uri = getattr(response, "effective_url").replace(
+                        "http://localhost:", "")
+                    port, uri = port_uri.split(
+                        "/")[0], "/".join(port_uri.split("/")[1:])
+                    url = "http://{}:{}/{}".format(host, port, uri)
+                    self.redirect(url)
                 if response.body:
                     self.write(response.body)
                 self.finish()
