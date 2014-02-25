@@ -91,7 +91,7 @@ class ProxyHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def connect(self):
-        host, port = self.request.uri.split(':')
+        host, port = self.request.host.split(':')
         client = self.request.connection.stream
 
         def read_from_client(data):
