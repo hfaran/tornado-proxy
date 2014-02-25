@@ -46,22 +46,24 @@ class ProxyHandler(tornado.web.RequestHandler):
     def get(self):
 
         def handle_response(response):
-            if response.error and not isinstance(response.error,
-                                                 tornado.httpclient.HTTPError):
+            if response.error and not isinstance(
+                response.error, tornado.httpclient.HTTPError
+            ):
                 self.set_status(500)
                 self.write('Internal server error:\n' + str(response.error))
                 self.finish()
             else:
                 self.set_status(response.code)
-                for header in ('Date', 'Cache-Control', 'Server',
-                               'Content-Type', 'Location'):
-                    v = response.headers.get(header)
-                    if v:
-                        self.set_header(header, v)
+                for k, v in response.headers.items():
+                    self.set_header(k, v)
+                # If redirect, then redirect
+                if hasattr(response, "effective_url"):
+                    self.redirect(getattr(response, "effective_url"))
                 if response.body:
                     self.write(response.body)
                 self.finish()
 
+        # Get hostname, and then pick which port we need from map
         host = self.request.host.split(":")[0]
         if host not in vhost_map:
             return  # Don't even respond to the request
@@ -102,7 +104,6 @@ def run_proxy(port, start_ioloop=True):
     ioloop = tornado.ioloop.IOLoop.instance()
     if start_ioloop:
         ioloop.start()
-
 
 
 if __name__ == '__main__':
