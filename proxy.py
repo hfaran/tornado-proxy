@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Simple asynchronous HTTP proxy with tunnelling (CONNECT).
+# HTTP Proxy Server for Proxying to Local Virtual Hosts
 #
 # GET/POST proxying based on
 # http://groups.google.com/group/python-tornado/msg/7bea08e7a049cf26
