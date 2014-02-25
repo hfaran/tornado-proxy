@@ -1,12 +1,12 @@
-## HTTP Proxy Server for Proxying to Local Virtual Hosts
+# tornado-vhost-proxy
 
-Built using Tornado (tested with version 3.2), supports HTTP GET, and POST methods.
+HTTP Proxy Server for Proxying to Local Virtual Hosts
 
-### Setup
+## Setup
 
     python setup.py install
 
-### Usage
+## Usage
 
 * Modify `vhost_map.json` to map hostnames to the port(s) required.
 * `python tornado_proxy/proxy.py -p [port] -v [vhost_map.json]`
