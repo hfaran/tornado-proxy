@@ -27,6 +27,8 @@
 
 import sys
 import socket
+import random
+import json
 
 import tornado.httpserver
 import tornado.ioloop
@@ -60,10 +62,17 @@ class ProxyHandler(tornado.web.RequestHandler):
                     self.write(response.body)
                 self.finish()
 
-        req = tornado.httpclient.HTTPRequest(url=self.request.uri,
+        host, _ = self.request.host.split(":")
+        if host not in vhost_map:
+            return  # Don't even respond to the request
+        port = random.choice(vhost_map[host])
+
+        req = tornado.httpclient.HTTPRequest(
+            url="http://localhost:{}{}".format(port, self.request.uri),
             method=self.request.method, body=self.request.body,
             headers=self.request.headers, follow_redirects=False,
-            allow_nonstandard_methods=True)
+            allow_nonstandard_methods=True
+        )
 
         client = tornado.httpclient.AsyncHTTPClient()
         try:
@@ -132,6 +141,8 @@ if __name__ == '__main__':
     port = 8888
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
+
+    vhost_map = json.load(open("vhost_map.json", "r"))
 
     print ("Starting HTTP proxy on port %d" % port)
     run_proxy(port)
