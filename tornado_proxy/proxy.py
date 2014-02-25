@@ -6,6 +6,7 @@
 # http://groups.google.com/group/python-tornado/msg/7bea08e7a049cf26
 #
 # Copyright (C) 2012 Senko Rasic <senko.rasic@dobarkod.hr>
+# Copyright (C) 2014 Hamza Faran <hamza@hfaran.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +26,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import socket
 import random
 import json
 import argparse
@@ -40,7 +40,7 @@ __all__ = ['ProxyHandler', 'run_proxy']
 
 
 class ProxyHandler(tornado.web.RequestHandler):
-    SUPPORTED_METHODS = ['GET', 'POST', 'CONNECT']
+    SUPPORTED_METHODS = ['GET', 'POST']
 
     @tornado.web.asynchronous
     def get(self):
@@ -89,40 +89,6 @@ class ProxyHandler(tornado.web.RequestHandler):
     def post(self):
         return self.get()
 
-    @tornado.web.asynchronous
-    def connect(self):
-        host, port = self.request.host.split(':')
-        client = self.request.connection.stream
-
-        def read_from_client(data):
-            upstream.write(data)
-
-        def read_from_upstream(data):
-            client.write(data)
-
-        def client_close(data=None):
-            if upstream.closed():
-                return
-            if data:
-                upstream.write(data)
-            upstream.close()
-
-        def upstream_close(data=None):
-            if client.closed():
-                return
-            if data:
-                client.write(data)
-            client.close()
-
-        def start_tunnel():
-            client.read_until_close(client_close, read_from_client)
-            upstream.read_until_close(upstream_close, read_from_upstream)
-            client.write(b'HTTP/1.0 200 Connection established\r\n\r\n')
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        upstream = tornado.iostream.IOStream(s)
-        upstream.connect((host, int(port)), start_tunnel)
-
 
 def run_proxy(port, start_ioloop=True):
     """
@@ -136,6 +102,8 @@ def run_proxy(port, start_ioloop=True):
     ioloop = tornado.ioloop.IOLoop.instance()
     if start_ioloop:
         ioloop.start()
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from distutils.core import setup, Command
-from unittest import TextTestRunner, TestLoader
 import os
 import os.path
 
@@ -23,13 +22,12 @@ class TestCommand(Command):
 
 setup(
     name='tornado-proxy',
-    version='0.1',
+    version='0.1.1',
     description='Simple asynchronous HTTP proxy',
-    url='http://senko.net/en/',
-    author='Senko Rasic',
-    author_email='senko.rasic@dobarkod.hr',
+    author='Senko Rasic, Hamza Faran',
+    author_email='senko.rasic@dobarkod.hr, hamza@hfaran.com',
     cmdclass={
-        'test': TestCommand
+        # 'test': TestCommand  # TODO: Uncomment when tests added
     },
     packages=['tornado_proxy'],
 )
