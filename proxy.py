@@ -62,7 +62,7 @@ class ProxyHandler(tornado.web.RequestHandler):
                     self.write(response.body)
                 self.finish()
 
-        host, _ = self.request.host.split(":")
+        host = self.request.host.split(":")[0]
         if host not in vhost_map:
             return  # Don't even respond to the request
         port = random.choice(vhost_map[host])
