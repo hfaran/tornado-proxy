@@ -29,6 +29,7 @@ import sys
 import socket
 import random
 import json
+import argparse
 
 import tornado.httpserver
 import tornado.ioloop
@@ -47,14 +48,14 @@ class ProxyHandler(tornado.web.RequestHandler):
 
         def handle_response(response):
             if response.error and not isinstance(response.error,
-                    tornado.httpclient.HTTPError):
+                                                 tornado.httpclient.HTTPError):
                 self.set_status(500)
                 self.write('Internal server error:\n' + str(response.error))
                 self.finish()
             else:
                 self.set_status(response.code)
                 for header in ('Date', 'Cache-Control', 'Server',
-                        'Content-Type', 'Location'):
+                               'Content-Type', 'Location'):
                     v = response.headers.get(header)
                     if v:
                         self.set_header(header, v)
@@ -138,11 +139,22 @@ def run_proxy(port, start_ioloop=True):
         ioloop.start()
 
 if __name__ == '__main__':
-    port = 8888
-    if len(sys.argv) > 1:
-        port = int(sys.argv[1])
+    parser = argparse.ArgumentParser(
+        description="Tornado-based proxy server matching hostname"
+        " to ports."
+    )
+    parser.add_argument(
+        '-p', '--port', type=int, help="Port to listen on.",
+        default=8888, dest="port")
+    parser.add_argument(
+        '-v', '--vhost-map', type=str, default="vhost_map.json",
+        help="Path to JSON file which contains mapping for hostname"
+        " to port list", dest="vhost_map"
+    )
+    args = parser.parse_args()
 
-    vhost_map = json.load(open("vhost_map.json", "r"))
+    port = args.port
+    vhost_map = json.load(open(args.vhost_map, "r"))
 
-    print ("Starting HTTP proxy on port %d" % port)
+    print("Starting HTTP proxy on port %d" % port)
     run_proxy(port)
