@@ -6,6 +6,7 @@
 import random
 import json
 import argparse
+from itertools import cycle
 
 import tornado.httpserver
 import tornado.ioloop
@@ -47,7 +48,7 @@ class ProxyHandler(tornado.web.RequestHandler):
         host = self.request.host.split(":")[0]
         if host not in vhost_map:
             return  # Don't even respond to the request
-        port = random.choice(vhost_map[host])
+        port = vhost_map[host].next()
 
         req = tornado.httpclient.HTTPRequest(
             url="http://localhost:{}{}".format(port, self.request.uri),
@@ -102,7 +103,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     port = args.port
-    vhost_map = json.load(open(args.vhost_map, "r"))
+    vhost_map = {
+        # Infinite iterator for ports so we can cycle through
+        vhost: cycle(ports)
+        for vhost, ports in json.load(
+            open(args.vhost_map, "r")
+        ).items()
+    }
 
     print("Starting HTTP proxy on port %d" % port)
     run_proxy(port)
