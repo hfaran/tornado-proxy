@@ -102,9 +102,15 @@ if __name__ == '__main__':
         help="Path to JSON file which contains mapping for hostname"
         " to port list", dest="vhost_map"
     )
+    parser.add_argument(
+        '-r', '--redirect-through-proxy', dest="redirect_through_proxy",
+        action='store_true', default=False, help='If this is set, on '
+        'effective_url redirect, redirect to port that proxy is running on '
+        'if the host is a vhost, so that client is not "tied" '
+        'to a specific port.'
+    )
     args = parser.parse_args()
 
-    port = args.port
     vhost_map = {
         # Infinite iterator for ports so we can cycle through
         vhost: cycle(ports)
@@ -113,5 +119,5 @@ if __name__ == '__main__':
         ).items()
     }
 
-    print("Starting HTTP proxy on port %d" % port)
-    run_proxy(port)
+    print("Starting HTTP proxy on port %d" % args.port)
+    run_proxy(args.port)
