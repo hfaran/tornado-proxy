@@ -40,6 +40,8 @@ class ProxyHandler(tornado.web.RequestHandler):
                         "/")[0], "/".join(port_uri.split("/")[1:])
                     url = "http://{}:{}/{}".format(host, port, uri)
                     self.redirect(url)
+                    return  # Explicitly return here to avoid calling
+                            #   finish() twice
                 if response.body:
                     self.write(response.body)
                 self.finish()
