@@ -11,9 +11,9 @@ HTTP Proxy Server for Proxying to Local Virtual Hosts
 ## Usage with `supervisord`
 
 ```bash
-sudo pip install supervisord
+sudo pip install supervisor
 # Modify the command in supervisord.conf as required
-mkdir /var/log/tornado-vhost-proxy
+sudo mkdir /var/log/tornado-vhost-proxy
 sudo chown -R $USER /var/log/tornado-vhost-proxy
 supervisord -c supervisord.conf
 ```
